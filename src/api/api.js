@@ -1,5 +1,5 @@
 // src/api/api.js
-const BASE_URL = "https://pair-status-api.onrender.com";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 const TOKEN_KEY = "token";
 
 // どれくらい前に更新するか（60秒）
