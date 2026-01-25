@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Page, Card, Row, Button, Input, Pill } from "../ui/ui";
+import { apiFetchJson } from "../api/api";
 
 const getToken = () => localStorage.getItem("token") || "";
 
@@ -12,7 +13,7 @@ export default function LoginPage({ onSuccess, right }) {
   const login = async () => {
     setMsg("ログイン中...");
 
-    const res = await fetch("http://localhost:8080/auth/login", {
+    const res = await apiFetchJson("/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
