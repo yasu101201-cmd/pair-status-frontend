@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  base: "/pair-status-front/",
   plugins: [react()],
+  base: "/pair-status-front/", // ← リポジトリ名に合わせる（あなたのは frontend の方でOK？）
   server: {
     proxy: {
       "/api": {
