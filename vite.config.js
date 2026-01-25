@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/pair-status-frontend/", // ← リポジトリ名に合わせる（あなたのは frontend の方でOK？）
+  base: "/pair-status-frontend/", // ← リポジトリ名に合わせる
   server: {
     proxy: {
       "/api": {
