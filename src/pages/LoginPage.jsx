@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Page, Card, Row, Button, Input, Pill } from "../ui/ui";
+import { Page, Card, Row, Button, Input } from "../ui/ui";
 import { apiFetchJson } from "../api/api";
 
 const getToken = () => localStorage.getItem("token") || "";
@@ -13,22 +13,26 @@ export default function LoginPage({ onSuccess, right }) {
   const login = async () => {
     setMsg("ログイン中...");
 
-    const res = await apiFetchJson("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      // ✅ apiFetchJson は「成功ならJSONを返す」「失敗なら throw」する想定
+      const data = await apiFetchJson("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!res.ok) {
-      const text = await res.text();
-      setMsg(`ログイン失敗: ${res.status}\n${text}`);
-      return;
+      // ✅ バックが返すキーに合わせる
+      const token = data?.accessToken;
+      if (!token) {
+        setMsg("ログイン失敗: accessToken がレスポンスにありません");
+        return;
+      }
+
+      localStorage.setItem("token", token);
+      setMsg("ログイン成功！token保存しました");
+      onSuccess?.();
+    } catch (e) {
+      setMsg(`ログイン失敗: ${String(e?.message || e)}`);
     }
-
-    const data = await res.json();
-    localStorage.setItem("token", data.accessToken);
-    setMsg("ログイン成功！token保存しました");
-    onSuccess?.();
   };
 
   const logout = () => {
@@ -48,9 +52,7 @@ export default function LoginPage({ onSuccess, right }) {
         title="アカウントでログイン"
         subtitle="メールとパスワードでログインします。成功すると token が localStorage に保存されます。"
       >
-        {/* ★ 真ん中に寄せる箱 */}
         <div style={{ maxWidth: 420, margin: "0 auto" }}>
-          {/* ★ 縦並びで視線が散らない */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
             <div>
               <div
@@ -92,7 +94,6 @@ export default function LoginPage({ onSuccess, right }) {
             </div>
           </div>
 
-          {/* ★ ボタンも中央にまとまる */}
           <Row gap={12} style={{ marginTop: 18, justifyContent: "center" }}>
             <Button variant="primary" onClick={login}>
               ログイン
