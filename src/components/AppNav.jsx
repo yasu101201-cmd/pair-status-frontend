@@ -1,7 +1,41 @@
 // src/components/AppNav.jsx
-import { Row, Button } from "../ui/ui";
+import { Row } from "../ui/ui";
 
 const getToken = () => localStorage.getItem("token") || "";
+
+function Tab({ active, disabled, onClick, icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        flex: 1,
+        height: 56,
+        border: "none",
+        background: active ? "rgba(15,23,42,0.06)" : "transparent",
+        borderRadius: 14,
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.45 : 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 4,
+        fontWeight: 900,
+      }}
+    >
+      <div style={{ fontSize: 20, lineHeight: 1 }}>{icon}</div>
+      <div
+        style={{
+          fontSize: 12,
+          opacity: active ? 1 : 0.65,
+        }}
+      >
+        {label}
+      </div>
+    </button>
+  );
+}
 
 export default function AppNav({
   page,
@@ -9,69 +43,46 @@ export default function AppNav({
   goCondition,
   goSettings,
   goLogin,
-  variant = "header", // "header" | "bottom"
+  variant = "bottom", // bottom を基本に
 }) {
   const tokenExists = !!getToken();
   const isBottom = variant === "bottom";
 
-  // ✅ bottom用：3等分レイアウト
-  const bottomBtnStyle = isBottom
-    ? {
-        flex: 1,
-        height: 48,
-        fontSize: 14,
-      }
-    : {};
+  // header表示は今はいったん捨てて、bottomに寄せるのがLINEっぽい
+  // （どうしてもヘッダーに残すなら、別コンポーネントに分けるのが綺麗）
+  if (!isBottom) return null;
 
   return (
     <Row
       gap={8}
       style={{
+        width: "100%",
         alignItems: "center",
         justifyContent: "space-between",
-        width: "100%",
-        flexWrap: "nowrap", // ✅ 折り返さない
+        flexWrap: "nowrap",
       }}
     >
-      <Button
+      <Tab
+        active={page === "pair"}
+        disabled={!tokenExists}
         onClick={goPair}
+        icon="👥"
+        label="ペア"
+      />
+      <Tab
+        active={page === "condition"}
         disabled={!tokenExists}
-        tone={page === "pair" ? "info" : "neutral"}
-        style={bottomBtnStyle}
-      >
-        ペア
-      </Button>
-
-      <Button
         onClick={goCondition}
+        icon="🩺"
+        label="コンディション"
+      />
+      <Tab
+        active={page === "settings"}
         disabled={!tokenExists}
-        tone={page === "condition" ? "info" : "neutral"}
-        style={bottomBtnStyle}
-      >
-        コンディション
-      </Button>
-
-      <Button
         onClick={goSettings}
-        disabled={!tokenExists}
-        tone={page === "settings" ? "info" : "neutral"}
-        style={bottomBtnStyle}
-      >
-        その他
-      </Button>
-
-      {/* header のみログアウト */}
-      {!isBottom && tokenExists && (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            localStorage.removeItem("token");
-            goLogin?.();
-          }}
-        >
-          ログアウト
-        </Button>
-      )}
+        icon="⚙️"
+        label="その他"
+      />
     </Row>
   );
 }

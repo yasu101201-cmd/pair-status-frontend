@@ -101,7 +101,7 @@ export function Page({ title, right, bottom, children }) {
         fontFamily: baseFont,
         color: theme.text,
         padding: "28px 18px",
-        paddingBottom: 28 + bottomH, // ✅ 下固定ぶん本文を上げる
+        paddingBottom: "110px", // 👈 bottom tab 分
       }}
     >
       <div style={{ maxWidth: theme.pageMax, margin: "0 auto" }}>
@@ -162,6 +162,7 @@ export function Page({ title, right, bottom, children }) {
       </div>
 
       {/* ✅ 下固定ナビ */}
+      {/* Page({ title, right, children, bottom }) */}
       {bottom ? (
         <div
           style={{
@@ -169,16 +170,15 @@ export function Page({ title, right, bottom, children }) {
             left: 0,
             right: 0,
             bottom: 0,
-            paddingBottom: "env(safe-area-inset-bottom)",
+            padding: "10px 12px calc(10px + env(safe-area-inset-bottom))",
             background: "rgba(255,255,255,0.92)",
-            borderTop: "1px solid rgba(15,23,42,0.10)",
             backdropFilter: "blur(10px)",
-            zIndex: 100,
+            borderTop: "1px solid rgba(15,23,42,0.08)",
+            boxShadow: "0 -8px 30px rgba(2,6,23,0.08)",
+            zIndex: 50,
           }}
         >
-          <div
-            style={{ maxWidth: theme.pageMax, margin: "0 auto", padding: 12 }}
-          >
+          <div style={{ maxWidth: theme.pageMax, margin: "0 auto" }}>
             {bottom}
           </div>
         </div>
