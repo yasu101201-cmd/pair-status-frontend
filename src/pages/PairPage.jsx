@@ -25,7 +25,6 @@ export default function PairPage({
   const [error, setError] = useState("");
 
   const [busy, setBusy] = useState(false);
-  const [showJson, setShowJson] = useState(false);
 
   const intervalRef = useRef(null);
   const tokenExists = useTokenExists(info + error);
@@ -379,7 +378,7 @@ export default function PairPage({
 
               <Button
                 onClick={goCondition}
-                variant="primary"
+                variant="success"
                 disabled={!isPaired}
                 title={!isPaired ? "ペア成立後に進めます" : ""}
               >
@@ -408,33 +407,6 @@ export default function PairPage({
             {bannerText}
           </div>
         )}
-
-        {/* 開発用 */}
-        <Card
-          title="開発用（JSON）"
-          subtitle="動作確認用。普段は閉じてOK。"
-          right={
-            <Button onClick={() => setShowJson((v) => !v)}>
-              {showJson ? "閉じる" : "JSONを見る"}
-            </Button>
-          }
-        >
-          {showJson && (
-            <pre
-              style={{
-                marginTop: 0,
-                padding: 12,
-                borderRadius: 12,
-                background: "#0b1020",
-                color: "#d1fae5",
-                overflowX: "auto",
-                fontSize: 12,
-              }}
-            >
-              {pairStatus ? JSON.stringify(pairStatus, null, 2) : "未取得"}
-            </pre>
-          )}
-        </Card>
       </div>
     </Page>
   );
