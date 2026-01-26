@@ -57,11 +57,6 @@ export default function PairPage({
 
   // ✅ 401で飛ばす共通処理（apiFetchJsonが token を消す）
   const onUnauthorized = () => {
-    toastPush(
-      "warn",
-      "⚠️ セッションが切れました。ログインし直してください",
-      2000,
-    );
     goLogin?.();
   };
 
