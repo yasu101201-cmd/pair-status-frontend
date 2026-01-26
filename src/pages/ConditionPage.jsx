@@ -62,6 +62,15 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
     }
   };
 
+  const normalizeUpdate = (u) => {
+    if (!u) return null;
+    return {
+      ...u,
+      // 本番(mainCondition) / 旧API(condition) どっちでも表示できるようにする
+      condition: u.mainCondition ?? u.condition,
+    };
+  };
+
   // ✅ 401で飛ばす共通処理（apiFetchJsonが token を消す）
   const onUnauthorized = () => {
     toastPush(
@@ -89,7 +98,7 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
       {},
       { onUnauthorized, allowStatuses: [404] },
     );
-    setMyLatest(data); // data=null なら未取得表示になる
+    setMyLatest(normalizeUpdate(data));
     return data;
   };
 
@@ -101,12 +110,11 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
       { onUnauthorized, allowStatuses: [404] },
     );
 
-    setPartnerLatest(data);
+    const normalized = normalizeUpdate(data);
+    setPartnerLatest(normalized);
 
-    // 相手更新検知（取れた時だけ）
-    if (data) {
-      const main = data?.mainCondition ?? data?.condition ?? "";
-      const newKey = `${main}_${data?.createdAt || ""}`;
+    if (normalized) {
+      const newKey = `${normalized?.condition || ""}_${normalized?.createdAt || ""}`;
       const prevKey = prevPartnerKeyRef.current;
 
       if (!quiet && prevKey && newKey && newKey !== prevKey) {
@@ -115,7 +123,7 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
       if (newKey) prevPartnerKeyRef.current = newKey;
     }
 
-    return data; // nullの場合も返す
+    return data;
   };
 
   // ✅ 初回遷移直後は “赤トースト” を出さない
