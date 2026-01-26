@@ -302,19 +302,21 @@ export default function PairPage({
               top: 10,
               zIndex: 50,
               marginBottom: 12,
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: "1px solid rgba(0,0,0,0.08)",
+              padding: "14px 16px",
+              borderRadius: 14,
 
-              // ✅ ここを「不透明」に
-              background: error ? "#fff1f2" : "#f8fafc",
+              // 🌟 近未来ガラス感
+              background: error
+                ? "rgba(254,242,242,0.95)"
+                : "rgba(248,250,252,0.92)",
+              backdropFilter: "blur(10px)",
+
+              border: "1px solid rgba(0,0,0,0.06)",
+              boxShadow: "0 14px 34px rgba(2,6,23,0.14)",
+
               color: error ? "#b91c1c" : "#0f172a",
-
-              // ✅ 読みやすさアップ
-              boxShadow: "0 10px 26px rgba(2,6,23,0.10)",
-
+              fontWeight: 800,
               whiteSpace: "pre-wrap",
-              fontWeight: 700,
             }}
           >
             {bannerText}
