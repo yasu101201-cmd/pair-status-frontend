@@ -34,6 +34,8 @@ export default function PairPage({
   const isWaiting = state === "WAITING";
   const joinCode = pairStatus?.joinCode || createdJoinCode || "";
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
+
   // -----------------------
   // 文言（状態から自動で決める）
   // -----------------------
@@ -186,6 +188,12 @@ export default function PairPage({
     }
   };
 
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 700);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   // -----------------------
   // 初回ロード（token無ければログインへ）
   // -----------------------
@@ -251,6 +259,7 @@ export default function PairPage({
     borderRadius: 14,
     border: "1px solid rgba(0,0,0,0.08)",
     background: "rgba(2,6,23,0.04)",
+    flexWrap: "nowrap",
   };
 
   const codeTextStyle = {
@@ -258,7 +267,25 @@ export default function PairPage({
     fontWeight: 900,
     letterSpacing: 3,
     lineHeight: 1.1,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   };
+
+  const bannerStyle = (isMobile, error) => ({
+    position: isMobile ? "sticky" : "static",
+    top: isMobile ? 10 : undefined,
+    zIndex: 50,
+
+    marginBottom: 12,
+    padding: "12px 14px",
+    borderRadius: 12,
+    border: "1px solid rgba(0,0,0,0.08)",
+    background: error ? "rgba(239,68,68,0.10)" : "rgba(15,23,42,0.04)",
+    color: error ? "#b91c1c" : "#0f172a",
+    whiteSpace: "pre-wrap",
+    fontWeight: 700,
+  });
 
   // 画面に出すメッセージ（優先度：error > info > stateMessage）
   const bannerText =
@@ -267,6 +294,28 @@ export default function PairPage({
   return (
     <Page title="ペア" right={right} bottom={bottom}>
       <div style={{ maxWidth: 920, margin: "0 auto" }}>
+        {/* メッセージ */}
+        {bannerText && (
+          <div
+            style={{
+              position: "sticky",
+              top: 10,
+              zIndex: 50,
+              marginBottom: 12,
+              padding: "12px 14px",
+              borderRadius: 12,
+              border: "1px solid rgba(0,0,0,0.08)",
+              background: error
+                ? "rgba(239,68,68,0.10)"
+                : "rgba(15,23,42,0.04)",
+              color: error ? "#b91c1c" : "#0f172a",
+              whiteSpace: "pre-wrap",
+              fontWeight: 700,
+            }}
+          >
+            {bannerText}
+          </div>
+        )}
         <div
           style={{
             display: "grid",
@@ -296,7 +345,7 @@ export default function PairPage({
             </Button>
 
             <div style={codeBoxStyle}>
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 12, fontWeight: 800, opacity: 0.65 }}>
                   あなたの joinCode
                 </div>
@@ -378,26 +427,6 @@ export default function PairPage({
             </Row>
           </Card>
         </div>
-
-        {/* メッセージ */}
-        {bannerText && (
-          <div
-            style={{
-              marginTop: 12,
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: "1px solid rgba(0,0,0,0.08)",
-              background: error
-                ? "rgba(239,68,68,0.10)"
-                : "rgba(15,23,42,0.04)",
-              color: error ? "#b91c1c" : "#0f172a",
-              whiteSpace: "pre-wrap",
-              fontWeight: 700,
-            }}
-          >
-            {bannerText}
-          </div>
-        )}
       </div>
     </Page>
   );
