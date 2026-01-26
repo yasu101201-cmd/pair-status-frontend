@@ -105,7 +105,8 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
 
     // 相手更新検知（取れた時だけ）
     if (data) {
-      const newKey = `${data?.condition || ""}_${data?.createdAt || ""}`;
+      const main = data?.mainCondition ?? data?.condition ?? "";
+      const newKey = `${main}_${data?.createdAt || ""}`;
       const prevKey = prevPartnerKeyRef.current;
 
       if (!quiet && prevKey && newKey && newKey !== prevKey) {
@@ -186,7 +187,11 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
         "/conditions",
         {
           method: "POST",
-          body: JSON.stringify({ condition }),
+          body: JSON.stringify({
+            mainCondition: condition,
+            subCondition: "NONE",
+            note: "",
+          }),
         },
         { onUnauthorized },
       );
@@ -352,7 +357,9 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
             }
           >
             <Row gap={10} style={{ alignItems: "center" }}>
-              <StatusBadge condition={myLatest?.condition} />
+              <StatusBadge
+                condition={myLatest?.mainCondition ?? myLatest?.condition}
+              />
               <span style={{ opacity: 0.7, fontSize: 13 }}>
                 {formatDate(myLatest?.createdAt)}
               </span>
@@ -375,7 +382,11 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
             {canSend ? (
               <>
                 <Row gap={10} style={{ alignItems: "center" }}>
-                  <StatusBadge condition={partnerLatest?.condition} />
+                  <StatusBadge
+                    condition={
+                      partnerLatest?.mainCondition ?? partnerLatest?.condition
+                    }
+                  />
                   <span style={{ opacity: 0.7, fontSize: 13 }}>
                     {formatDate(partnerLatest?.createdAt)}
                   </span>
