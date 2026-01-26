@@ -305,10 +305,14 @@ export default function PairPage({
               padding: "12px 14px",
               borderRadius: 12,
               border: "1px solid rgba(0,0,0,0.08)",
-              background: error
-                ? "rgba(239,68,68,0.10)"
-                : "rgba(15,23,42,0.04)",
+
+              // ✅ ここを「不透明」に
+              background: error ? "#fff1f2" : "#f8fafc",
               color: error ? "#b91c1c" : "#0f172a",
+
+              // ✅ 読みやすさアップ
+              boxShadow: "0 10px 26px rgba(2,6,23,0.10)",
+
               whiteSpace: "pre-wrap",
               fontWeight: 700,
             }}
