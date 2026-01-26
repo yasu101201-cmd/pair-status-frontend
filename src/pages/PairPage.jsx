@@ -251,6 +251,7 @@ export default function PairPage({
     borderRadius: 14,
     border: "1px solid rgba(0,0,0,0.08)",
     background: "rgba(2,6,23,0.04)",
+    marginTop: 25,
   };
 
   const codeTextStyle = {
@@ -300,7 +301,9 @@ export default function PairPage({
                 <div style={{ fontSize: 12, fontWeight: 800, opacity: 0.65 }}>
                   あなたの joinCode
                 </div>
-                <div style={codeTextStyle}>{joinCode || "---- ----"}</div>
+                <div style={{ ...codeTextStyle, whiteSpace: "nowrap" }}>
+                  {joinCode || "---- ----"}
+                </div>
               </div>
 
               <Button onClick={copyJoinCode} disabled={!joinCode}>
@@ -311,12 +314,6 @@ export default function PairPage({
             {isWaiting && (
               <div style={{ marginTop: 10, opacity: 0.8 }}>
                 ⏳ 待機中（自動更新中）
-              </div>
-            )}
-
-            {isPaired && (
-              <div style={{ marginTop: 10, opacity: 0.8 }}>
-                ✅ ペア成立済み！「コンディションへ」で状態送信できます。
               </div>
             )}
           </Card>
