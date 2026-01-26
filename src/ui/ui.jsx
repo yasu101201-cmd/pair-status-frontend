@@ -20,7 +20,79 @@ export function Spacer({ h = 12 }) {
   return <div style={{ height: h }} />;
 }
 
-export function Page({ title, right, children }) {
+// export function Page({ title, right, children }) {
+//   return (
+//     <div
+//       style={{
+//         minHeight: "100vh",
+//         background: theme.bg,
+//         fontFamily: baseFont,
+//         color: theme.text,
+//         padding: "28px 18px",
+//       }}
+//     >
+//       <div style={{ maxWidth: theme.pageMax, margin: "0 auto" }}>
+//         {/* App Header */}
+//         <div
+//           style={{
+//             background: "rgba(255,255,255,0.55)",
+//             border: "1px solid rgba(15, 23, 42, 0.06)",
+//             borderRadius: 20,
+//             padding: "18px 18px",
+//             boxShadow: "0 10px 30px rgba(2,6,23,0.06)",
+//             backdropFilter: "blur(8px)",
+//           }}
+//         >
+//           <div
+//             style={{
+//               display: "flex",
+//               alignItems: "flex-start",
+//               justifyContent: "space-between",
+//               gap: 12,
+//             }}
+//           >
+//             <div>
+//               <h1 style={{ margin: 0, fontSize: 28, letterSpacing: -0.5 }}>
+//                 Pair Condition App
+//               </h1>
+//               <div style={{ marginTop: 6, color: theme.muted, fontSize: 13 }}>
+//                 ペアを作って、相手の状態をサクッと共有。
+//               </div>
+//             </div>
+
+//             {right ? <div>{right}</div> : null}
+//           </div>
+//         </div>
+
+//         {/* spacer : ヘッダーと本文の距離 */}
+//         <div style={{ height: 26 }} />
+
+//         {/* Page title row */}
+//         <div
+//           style={{
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "space-between",
+//             gap: 12,
+//             marginBottom: 16,
+//           }}
+//         >
+//           <h2 style={{ margin: 0, fontSize: 22 }}>{title}</h2>
+//         </div>
+
+//         {/* Content */}
+//         <div>{children}</div>
+
+//         {/* bottom spacer */}
+//         <div style={{ height: 30 }} />
+//       </div>
+//     </div>
+//   );
+// }
+
+export function Page({ title, right, bottom, children }) {
+  const bottomH = bottom ? 74 : 0; // ✅ 高さ（好みでOK）
+
   return (
     <div
       style={{
@@ -29,6 +101,7 @@ export function Page({ title, right, children }) {
         fontFamily: baseFont,
         color: theme.text,
         padding: "28px 18px",
+        paddingBottom: 28 + bottomH, // ✅ 下固定ぶん本文を上げる
       }}
     >
       <div style={{ maxWidth: theme.pageMax, margin: "0 auto" }}>
@@ -60,6 +133,7 @@ export function Page({ title, right, children }) {
               </div>
             </div>
 
+            {/* right は残す（PC/開発用に便利） */}
             {right ? <div>{right}</div> : null}
           </div>
         </div>
@@ -83,9 +157,32 @@ export function Page({ title, right, children }) {
         {/* Content */}
         <div>{children}</div>
 
-        {/* bottom spacer */}
-        <div style={{ height: 30 }} />
+        {/* bottom spacer（上のpaddingBottomで確保するので薄くてOK） */}
+        <div style={{ height: 12 }} />
       </div>
+
+      {/* ✅ 下固定ナビ */}
+      {bottom ? (
+        <div
+          style={{
+            position: "fixed",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            paddingBottom: "env(safe-area-inset-bottom)",
+            background: "rgba(255,255,255,0.92)",
+            borderTop: "1px solid rgba(15,23,42,0.10)",
+            backdropFilter: "blur(10px)",
+            zIndex: 100,
+          }}
+        >
+          <div
+            style={{ maxWidth: theme.pageMax, margin: "0 auto", padding: 12 }}
+          >
+            {bottom}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

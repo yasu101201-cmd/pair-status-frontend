@@ -9,7 +9,13 @@ function useTokenExists(dep) {
   return useMemo(() => !!getToken(), [dep]);
 }
 
-export default function PairPage({ goCondition, goSettings, goLogin, right }) {
+export default function PairPage({
+  goCondition,
+  goSettings,
+  goLogin,
+  right,
+  bottom,
+}) {
   const [pairStatus, setPairStatus] = useState(null);
   const [joinCodeInput, setJoinCodeInput] = useState("");
   const [createdJoinCode, setCreatedJoinCode] = useState("");
@@ -265,7 +271,7 @@ export default function PairPage({ goCondition, goSettings, goLogin, right }) {
     error || (state === "PAIRED" ? stateMessage : info || stateMessage);
 
   return (
-    <Page title="ペア" right={right}>
+    <Page title="ペア" right={right} bottom={bottom}>
       <div style={{ maxWidth: 920, margin: "0 auto" }}>
         <div
           style={{

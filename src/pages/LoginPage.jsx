@@ -4,7 +4,7 @@ import { apiFetchJson } from "../api/api";
 
 const getToken = () => localStorage.getItem("token") || "";
 
-export default function LoginPage({ onSuccess, right }) {
+export default function LoginPage({ onSuccess, right, bottom }) {
   const [email, setEmail] = useState("test@example.com");
   const [password, setPassword] = useState("password");
   const [msg, setMsg] = useState("");
@@ -47,7 +47,7 @@ export default function LoginPage({ onSuccess, right }) {
   };
 
   return (
-    <Page title="ログイン" right={right}>
+    <Page title="ログイン" right={right} bottom={bottom}>
       <Card
         title="アカウントでログイン"
         subtitle="メールとパスワードでログインします。成功すると token が localStorage に保存されます。"

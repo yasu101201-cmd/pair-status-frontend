@@ -58,7 +58,13 @@ function timeAgo(iso) {
   return `${diffDay}日前`;
 }
 
-export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
+export default function ConditionPage({
+  goPair,
+  goSettings,
+  goLogin,
+  bottom,
+  right,
+}) {
   const [pairStatus, setPairStatus] = useState(null);
 
   const [myLatest, setMyLatest] = useState(null);
@@ -264,7 +270,7 @@ export default function ConditionPage({ goPair, goSettings, goLogin, right }) {
   const cardWrap = { maxWidth: 720, margin: "0 auto" };
 
   return (
-    <Page title="コンディション" right={right}>
+    <Page title="コンディション" right={right} bottom={bottom}>
       <div style={cardWrap}>
         {toast && (
           <Toast tone={toast.tone} onClose={() => setToast(null)}>

@@ -5,7 +5,13 @@ import { apiFetchJson } from "../api/api";
 
 const getToken = () => localStorage.getItem("token") || "";
 
-export default function SettingsPage({ goPair, goCondition, goLogin, right }) {
+export default function SettingsPage({
+  goPair,
+  goCondition,
+  goLogin,
+  right,
+  bottom,
+}) {
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState(null); // { tone, text }
   const [pairStatus, setPairStatus] = useState(null);
@@ -168,7 +174,7 @@ export default function SettingsPage({ goPair, goCondition, goLogin, right }) {
           : "未取得";
 
   return (
-    <Page title="その他" right={right}>
+    <Page title="その他" right={right} bottom={bottom}>
       <div style={{ maxWidth: 920, margin: "0 auto" }}>
         {toast && (
           <Toast tone={toast.tone} onClose={() => setToast(null)}>

@@ -5,7 +5,7 @@ import PairPage from "./pages/PairPage";
 import ConditionPage from "./pages/ConditionPage";
 import SettingsPage from "./pages/SettingsPage";
 import AppNav from "./components/AppNav";
-import AuthGuard from "./components/AuthGuard"; // ★追加
+import AuthGuard from "./components/AuthGuard";
 
 export default function App() {
   const [page, setPage] = useState("login");
@@ -15,6 +15,18 @@ export default function App() {
     setPage("login");
   };
 
+  const bottom = (
+    <AppNav
+      page={page}
+      goPair={() => setPage("pair")}
+      goCondition={() => setPage("condition")}
+      goSettings={() => setPage("settings")}
+      goLogin={handleUnauthorized}
+      variant="bottom"
+    />
+  );
+
+  // （任意）PCで右上も残したいならこれも使える
   const right = (
     <AppNav
       page={page}
@@ -22,6 +34,7 @@ export default function App() {
       goCondition={() => setPage("condition")}
       goSettings={() => setPage("settings")}
       goLogin={handleUnauthorized}
+      variant="header"
     />
   );
 
@@ -34,8 +47,9 @@ export default function App() {
           <PairPage
             goCondition={() => setPage("condition")}
             goSettings={() => setPage("settings")}
-            goLogin={handleUnauthorized} // 401時の保険として残してOK
-            right={right}
+            goLogin={handleUnauthorized}
+            bottom={bottom}
+            right={right} // いらなければ消してOK
           />
         </AuthGuard>
       )}
@@ -46,7 +60,8 @@ export default function App() {
             goPair={() => setPage("pair")}
             goSettings={() => setPage("settings")}
             goLogin={handleUnauthorized}
-            right={right}
+            bottom={bottom}
+            right={right} // いらなければ消してOK
           />
         </AuthGuard>
       )}
@@ -57,7 +72,8 @@ export default function App() {
             goPair={() => setPage("pair")}
             goCondition={() => setPage("condition")}
             goLogin={handleUnauthorized}
-            right={right}
+            bottom={bottom}
+            right={right} // いらなければ消してOK
           />
         </AuthGuard>
       )}

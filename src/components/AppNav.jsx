@@ -1,5 +1,5 @@
 // src/components/AppNav.jsx
-import { Row, Button, Pill } from "../ui/ui";
+import { Row, Button } from "../ui/ui";
 
 const getToken = () => localStorage.getItem("token") || "";
 
@@ -9,40 +9,65 @@ export default function AppNav({
   goCondition,
   goSettings,
   goLogin,
+  variant = "header", // "header" | "bottom"
 }) {
   const tokenExists = !!getToken();
+  const isBottom = variant === "bottom";
+
+  // ✅ bottom用：3等分レイアウト
+  const bottomBtnStyle = isBottom
+    ? {
+        flex: 1,
+        height: 48,
+        fontSize: 14,
+      }
+    : {};
 
   return (
-    <Row gap={8} style={{ alignItems: "center", justifyContent: "flex-end" }}>
-      <Pill tone="muted">token: {tokenExists ? "あり" : "なし"}</Pill>
+    <Row
+      gap={8}
+      style={{
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%",
+        flexWrap: "nowrap", // ✅ 折り返さない
+      }}
+    >
+      <Button
+        onClick={goPair}
+        disabled={!tokenExists}
+        tone={page === "pair" ? "info" : "neutral"}
+        style={bottomBtnStyle}
+      >
+        ペア
+      </Button>
 
-      {page !== "pair" && (
-        <Button onClick={goPair} disabled={!tokenExists}>
-          ペア
-        </Button>
-      )}
+      <Button
+        onClick={goCondition}
+        disabled={!tokenExists}
+        tone={page === "condition" ? "info" : "neutral"}
+        style={bottomBtnStyle}
+      >
+        コンディション
+      </Button>
 
-      {page !== "condition" && (
-        <Button onClick={goCondition} disabled={!tokenExists}>
-          コンディション
-        </Button>
-      )}
+      <Button
+        onClick={goSettings}
+        disabled={!tokenExists}
+        tone={page === "settings" ? "info" : "neutral"}
+        style={bottomBtnStyle}
+      >
+        その他
+      </Button>
 
-      {page !== "settings" && (
-        <Button onClick={goSettings} disabled={!tokenExists}>
-          その他
-        </Button>
-      )}
-
-      {/* ログインは token ありの時だけ出す */}
-      {tokenExists && (
+      {/* header のみログアウト */}
+      {!isBottom && tokenExists && (
         <Button
           variant="ghost"
           onClick={() => {
             localStorage.removeItem("token");
             goLogin?.();
           }}
-          title="tokenを削除してログイン画面へ戻ります"
         >
           ログアウト
         </Button>
