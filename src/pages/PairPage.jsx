@@ -39,7 +39,7 @@ export default function PairPage({
   // -----------------------
   const stateMessage = useMemo(() => {
     if (state === "PAIRED")
-      return "🎉 ペアが成立しました！「コンディションへ」で状態を送れます。";
+      return "🎉 ペアが成立しました！「コンディション画面」で状態を送れます。";
     if (state === "WAITING")
       return "⏳ 待機中です。相手が joinCode で参加すると自動で「ペア成立」になります（自動更新中）。";
     if (state === "NONE")
@@ -251,7 +251,6 @@ export default function PairPage({
     borderRadius: 14,
     border: "1px solid rgba(0,0,0,0.08)",
     background: "rgba(2,6,23,0.04)",
-    marginTop: 25,
   };
 
   const codeTextStyle = {
