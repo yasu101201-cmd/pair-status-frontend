@@ -181,48 +181,53 @@ export default function SettingsPage({
             {toast.text}
           </Toast>
         )}
-
-        <Row style={{ justifyContent: "space-between", marginTop: 12 }}>
-          {/* <Row gap={10}>
-            <Button onClick={goPair} disabled={busy}>
-              ← ペアへ
-            </Button>
-            <Button onClick={goCondition} disabled={busy}>
-              コンディションへ
-            </Button>
-          </Row> */}
-
+        {/* <Row style={{ justifyContent: "space-between", marginTop: 12 }}>
           <Button onClick={() => refresh()} disabled={busy}>
             {busy ? "処理中..." : "更新"}
           </Button>
-        </Row>
+        </Row> */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 10,
+            marginTop: 10,
+          }}
+        >
+          <Button onClick={() => refreshAll()} disabled={busy}>
+            {busy ? "更新中..." : "更新"}
+          </Button>
+        </div>
 
-        {/* 状態 */}
         <Card
           title="現在の状態"
-          subtitle="pairs/status を表示します"
+          subtitle={
+            import.meta.env.DEV ? "pairs/status を表示します" : "現在のペア状態"
+          }
           right={<Pill tone={pairTone}>{pairText}</Pill>}
         >
-          <details>
-            <summary style={{ cursor: "pointer", opacity: 0.85 }}>
-              JSONを見る
-            </summary>
-            <pre
-              style={{
-                marginTop: 10,
-                padding: 12,
-                borderRadius: 12,
-                background: "#0b1020",
-                color: "#d1fae5",
-                overflowX: "auto",
-                fontSize: 12,
-              }}
-            >
-              {pairStatus ? JSON.stringify(pairStatus, null, 2) : "未取得"}
-            </pre>
-          </details>
+          {/* ✅ 開発環境だけ JSON を表示 */}
+          {import.meta.env.DEV && (
+            <details>
+              <summary style={{ cursor: "pointer", opacity: 0.85 }}>
+                JSONを見る（開発用）
+              </summary>
+              <pre
+                style={{
+                  marginTop: 10,
+                  padding: 12,
+                  borderRadius: 12,
+                  background: "#0b1020",
+                  color: "#d1fae5",
+                  overflowX: "auto",
+                  fontSize: 12,
+                }}
+              >
+                {pairStatus ? JSON.stringify(pairStatus, null, 2) : "未取得"}
+              </pre>
+            </details>
+          )}
         </Card>
-
         {/* 危険操作 */}
         <Card
           title="ペア脱退"
@@ -234,8 +239,7 @@ export default function SettingsPage({
           }
         >
           <div style={{ opacity: 0.8, fontSize: 13, lineHeight: 1.6 }}>
-            - どちらかが脱退すると <b>相手も自動でペア解除</b>{" "}
-            されます（バックエンド実装済み）
+            - どちらかが脱退すると <b>相手も自動でペア解除</b> されます
             <br />- 解除後はコンディション送信ができなくなります
           </div>
 
@@ -264,11 +268,10 @@ export default function SettingsPage({
             )}
           </Row>
         </Card>
-
         {/* ログアウト */}
         <Card
           title="ログアウト"
-          subtitle="token を削除します（localStorage）"
+          subtitle="ログイン画面へ遷移します"
           right={<Pill tone="muted">セッション</Pill>}
         >
           <Row gap={10}>
