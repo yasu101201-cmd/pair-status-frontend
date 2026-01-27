@@ -25,6 +25,7 @@ export default function PairPage({
   const [error, setError] = useState("");
 
   const [busy, setBusy] = useState(false);
+  const [showJoinWarning, setShowJoinWarning] = useState(false);
 
   const intervalRef = useRef(null);
   const tokenExists = useTokenExists(info + error);
@@ -33,7 +34,8 @@ export default function PairPage({
   const isPaired = state === "PAIRED";
   const isWaiting = state === "WAITING";
   const joinCode = pairStatus?.joinCode || createdJoinCode || "";
-
+  const canJoin = state !== "PAIRED"; // NONE と WAITING は参加OK
+  const canCreate = state === "NONE"; // 作るは NONE のときだけ
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
 
   // -----------------------
@@ -121,8 +123,31 @@ export default function PairPage({
 
       await refreshStatus({ quiet: true });
     } catch (e) {
+      const msg = String(e?.message || e);
+
+      // 409系（すでにペア / すでに作成済み）だけは「案内」にする
+      if (msg.includes("409") || msg.toLowerCase().includes("already paired")) {
+        setError("");
+
+        // 状態で文言を分ける（WAITINGならjoinCode発行済み、PAIREDなら成立済み）
+        if (isPaired) {
+          setInfo(
+            "ℹ️ すでにペア成立しています。「コンディションへ」へ進んでね。",
+          );
+        } else if (isWaiting) {
+          setInfo("ℹ️ すでにjoinCodeを発行済みです。相手の参加を待ってね。");
+        } else {
+          setInfo("ℹ️ すでにペアがあるようです。状態を更新して確認してね。");
+        }
+
+        // 念のため状態を取り直す（quietでOK）
+        await refreshStatus({ quiet: true });
+        return;
+      }
+
+      // それ以外は今まで通り赤エラー
       setInfo("");
-      setError(`❌ 作成に失敗\n${String(e.message || e)}`);
+      setError(`❌ 作成に失敗\n${msg}`);
     } finally {
       setBusy(false);
     }
@@ -150,6 +175,16 @@ export default function PairPage({
     setInfo("参加処理中...");
 
     try {
+      // ✅ ここが肝：WAITINGなら先に自分のWAITINGを消す
+      if (state === "WAITING") {
+        await apiFetchJson(
+          "/pairs/leave",
+          { method: "POST" },
+          { onUnauthorized },
+        );
+        await refreshStatus({ quiet: true });
+      }
+
       await apiFetchJson(
         "/pairs/join",
         {
@@ -170,7 +205,6 @@ export default function PairPage({
       setBusy(false);
     }
   };
-
   const copyJoinCode = async () => {
     if (!joinCode) {
       setInfo("");
@@ -335,13 +369,22 @@ export default function PairPage({
             <Button
               variant="primary"
               onClick={createPair}
-              disabled={busy}
+              disabled={busy || !canCreate}
+              title={
+                state === "WAITING"
+                  ? "相手の参加を待っています"
+                  : state === "PAIRED"
+                    ? "すでにペアが成立しています"
+                    : ""
+              }
               style={{
                 width: "100%",
                 marginTop: 5,
                 marginBottom: 20,
                 padding: "14px 16px",
                 fontSize: 15,
+                opacity: !canCreate ? 0.6 : 1,
+                cursor: !canCreate ? "not-allowed" : "pointer",
               }}
             >
               ペアを作る
@@ -397,7 +440,8 @@ export default function PairPage({
               <Button
                 variant="primary"
                 onClick={joinPair}
-                disabled={busy}
+                disabled={busy || !canJoin}
+                title={state === "PAIRED" ? "すでにペアが成立しています" : ""}
                 style={{
                   width: "100%",
                   marginTop: 14,
