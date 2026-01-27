@@ -209,7 +209,7 @@ export default function ConditionPage({
 
       // 送信後の気持ちよさ：自分カード即更新
       await fetchMyLatest();
-      toastPush("success", "💌 送ったよ（相手に届くよ）");
+      toastPush("success", " 送りました！（相手に届くよ）");
 
       // 入力リセット（迷いにくい）
       setSubSelected("NONE");
@@ -278,6 +278,20 @@ export default function ConditionPage({
           </Toast>
         )}
 
+        {/* 全部更新：右上にポツン（動かない） */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 10,
+            marginTop: 10,
+          }}
+        >
+          <Button onClick={() => refreshAll()} disabled={busy}>
+            {busy ? "更新中..." : "更新"}
+          </Button>
+        </div>
+
         {/* ✅ 相手を最上部（主役） */}
         <Card
           title="相手の今"
@@ -329,12 +343,9 @@ export default function ConditionPage({
               ) : null}
 
               <Row style={{ justifyContent: "space-between" }}>
-                <Button onClick={() => fetchPartnerLatest()} disabled={busy}>
+                {/* <Button onClick={() => fetchPartnerLatest()} disabled={busy}>
                   相手だけ更新
-                </Button>
-                <Button onClick={() => refreshAll()} disabled={busy}>
-                  全部更新
-                </Button>
+                </Button> */}
               </Row>
             </div>
           ) : (
@@ -499,26 +510,15 @@ export default function ConditionPage({
             ) : null}
 
             <Row style={{ justifyContent: "space-between" }}>
-              <Button onClick={() => fetchMyLatest()} disabled={busy}>
+              {/* <Button onClick={() => fetchMyLatest()} disabled={busy}>
                 自分だけ更新
-              </Button>
-              <Button onClick={() => refreshAll()} disabled={busy}>
-                全部更新
-              </Button>
+              </Button> */}
             </Row>
           </div>
         </Card>
 
         {/* ペア状態 */}
-        <Card
-          title="ペア状態"
-          subtitle="送信できない時はここ"
-          right={
-            <Button onClick={() => refreshAll()} disabled={busy}>
-              更新
-            </Button>
-          }
-        >
+        <Card title="ペア状態" subtitle="送信できない時はここ">
           <Row gap={10} style={{ alignItems: "center" }}>
             <Pill tone={pairTone}>state: {state}</Pill>
             <span style={{ opacity: 0.7, fontSize: 13 }}>
