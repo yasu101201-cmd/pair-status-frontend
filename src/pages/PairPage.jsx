@@ -200,7 +200,32 @@ export default function PairPage({
       await refreshStatus({ quiet: true });
     } catch (e) {
       setInfo("");
-      setError(`❌ 参加に失敗\n${String(e.message || e)}`);
+
+      const msg = String(e?.message || e);
+
+      // ありがち：存在しないコード
+      const is404 =
+        msg.includes(":404") ||
+        msg.includes('"status":404') ||
+        msg.includes("Pair not found");
+
+      // ありがち：すでにペア済み/参加済み
+      const is409 =
+        msg.includes(":409") ||
+        msg.includes('"status":409') ||
+        msg.includes("already paired");
+
+      if (is404) {
+        setError(
+          "❌ この joinCode は見つかりませんでした。相手のコードをもう一度確認してください。",
+        );
+      } else if (is409) {
+        setError(
+          "⚠️ すでにペアが成立しています。「コンディションへ」から送れます。",
+        );
+      } else {
+        setError("❌ 参加に失敗しました。時間をおいてもう一度試してね。");
+      }
     } finally {
       setBusy(false);
     }
