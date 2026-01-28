@@ -4,7 +4,7 @@ import { apiFetchJson } from "../api/api";
 
 const getToken = () => localStorage.getItem("token") || "";
 
-// ✅ メイン（5つ固定）
+// ✅ メイン（5つ固定）※backend enum名と一致
 const MAIN = [
   { label: "いい感じ", value: "IIGAKANJI", emoji: "😊", tone: "softSuccess" },
   { label: "ふつう", value: "FUTSU", emoji: "😐", tone: "softInfo" },
@@ -13,19 +13,46 @@ const MAIN = [
   { label: "話したい", value: "HANASHITAI", emoji: "💭", tone: "softInfo" },
 ];
 
-// ✅ サブ（通常時：常に3つ出す）
-const SUB_NORMAL = [
-  { label: "寂しい", value: "SABISHII", emoji: "🫶" },
-  { label: "辛い", value: "TSURAI", emoji: "😣" },
-  { label: "嬉しい", value: "URESHII", emoji: "🎉" },
-];
+// サブ定義（英語enum名＝backendと完全一致）
+const SUB_BY_MAIN = {
+  IIGAKANJI: [
+    { label: "寂しい", value: "LONELY", emoji: "🫶" },
+    { label: "辛い", value: "PAINFUL", emoji: "😣" },
+    { label: "嬉しい", value: "HAPPY", emoji: "🎉" },
+    { label: "お腹すいた", value: "HUNGRY", emoji: "🍽️" },
+  ],
+  FUTSU: [
+    { label: "寂しい", value: "LONELY", emoji: "🫶" },
+    { label: "辛い", value: "PAINFUL", emoji: "😣" },
+    { label: "嬉しい", value: "HAPPY", emoji: "🎉" },
+    { label: "お腹すいた", value: "HUNGRY", emoji: "🍽️" },
+  ],
+  HANASHITAI: [
+    { label: "寂しい", value: "LONELY", emoji: "🫶" },
+    { label: "辛い", value: "PAINFUL", emoji: "😣" },
+    { label: "嬉しい", value: "HAPPY", emoji: "🎉" },
+    { label: "お腹すいた", value: "HUNGRY", emoji: "🍽️" },
+  ],
+  WARUI: [
+    { label: "疲れた", value: "TIRED", emoji: "😮‍💨" },
+    { label: "眠い", value: "SLEEPY", emoji: "😴" },
+    { label: "寂しい", value: "LONELY", emoji: "🫶" },
+    { label: "辛い", value: "PAINFUL", emoji: "😣" }, // ←「しんどいに辛い追加」OK
+  ],
+  TAICYOUWARUI: [
+    { label: "風邪気味", value: "COLD", emoji: "🤧" },
+    { label: "熱", value: "FEVER", emoji: "🌡️" },
+    { label: "頭痛", value: "HEADACHE", emoji: "🤕" },
+    { label: "だるい", value: "SLUGGISH", emoji: "🥱" },
+  ],
+};
 
-// ✅ サブ（体調悪いの時だけ出す）
-const SUB_HEALTH = [
-  { label: "疲れた", value: "TSUKARETA", emoji: "😮‍💨" },
-  { label: "眠い", value: "NEMUI", emoji: "😴" },
-  { label: "お腹すいた", value: "ONAKA", emoji: "🍽️" },
-];
+// 表示用：value -> {label, emoji} を引ける辞書
+const SUB_META = Object.fromEntries(
+  Object.values(SUB_BY_MAIN)
+    .flat()
+    .map((s) => [s.value, s]),
+);
 
 const SUB_SELECTED_STYLE = {
   border: "2px solid rgba(59,130,246,0.9)",
@@ -172,7 +199,7 @@ export default function ConditionPage({
     }
   };
 
-  const subList = mainSelected === "TAICYOUWARUI" ? SUB_HEALTH : SUB_NORMAL;
+  const subList = mainSelected ? SUB_BY_MAIN[mainSelected] || [] : [];
 
   const send = async () => {
     if (busy) return;
@@ -261,11 +288,10 @@ export default function ConditionPage({
   const partnerMainMeta = metaBy(MAIN, partnerMain);
   const myMainMeta = metaBy(MAIN, myMain);
 
-  const subNormalMeta = metaBy(SUB_NORMAL, partnerSub);
-  const subHealthMeta = metaBy(SUB_HEALTH, partnerSub);
-  const partnerSubMeta = subNormalMeta || subHealthMeta;
+  const partnerSubMeta =
+    partnerSub && partnerSub !== "NONE" ? SUB_META[partnerSub] : null;
 
-  const mySubMeta = metaBy(SUB_NORMAL, mySub) || metaBy(SUB_HEALTH, mySub);
+  const mySubMeta = mySub && mySub !== "NONE" ? SUB_META[mySub] : null;
 
   const cardWrap = { maxWidth: 720, margin: "0 auto" };
 
