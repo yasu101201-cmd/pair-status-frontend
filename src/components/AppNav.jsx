@@ -43,6 +43,7 @@ export default function AppNav({
   goCondition,
   goSettings,
   goLogin,
+  goChat,
   variant = "bottom", // bottom を基本に
 }) {
   const tokenExists = !!getToken();
@@ -75,6 +76,13 @@ export default function AppNav({
         onClick={goCondition}
         icon="🩺"
         label="コンディション"
+      />
+      <Tab
+        active={page === "chat"}
+        disabled={!tokenExists}
+        onClick={goChat}
+        icon="💬"
+        label="日々の記録"
       />
       <Tab
         active={page === "settings"}

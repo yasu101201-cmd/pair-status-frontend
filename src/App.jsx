@@ -1,9 +1,9 @@
-// src/App.jsx
 import { useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import PairPage from "./pages/PairPage";
 import ConditionPage from "./pages/ConditionPage";
 import SettingsPage from "./pages/SettingsPage";
+import ChatPage from "./pages/ChatPage";
 import AppNav from "./components/AppNav";
 import AuthGuard from "./components/AuthGuard";
 
@@ -20,18 +20,19 @@ export default function App() {
       page={page}
       goPair={() => setPage("pair")}
       goCondition={() => setPage("condition")}
+      goChat={() => setPage("chat")}
       goSettings={() => setPage("settings")}
       goLogin={handleUnauthorized}
       variant="bottom"
     />
   );
 
-  // （任意）PCで右上も残したいならこれも使える
   const right = (
     <AppNav
       page={page}
       goPair={() => setPage("pair")}
       goCondition={() => setPage("condition")}
+      goChat={() => setPage("chat")}
       goSettings={() => setPage("settings")}
       goLogin={handleUnauthorized}
       variant="header"
@@ -49,7 +50,7 @@ export default function App() {
             goSettings={() => setPage("settings")}
             goLogin={handleUnauthorized}
             bottom={bottom}
-            right={right} // いらなければ消してOK
+            right={right}
           />
         </AuthGuard>
       )}
@@ -61,8 +62,14 @@ export default function App() {
             goSettings={() => setPage("settings")}
             goLogin={handleUnauthorized}
             bottom={bottom}
-            right={right} // いらなければ消してOK
+            right={right}
           />
+        </AuthGuard>
+      )}
+
+      {page === "chat" && (
+        <AuthGuard goLogin={handleUnauthorized}>
+          <ChatPage bottom={bottom} right={right} />
         </AuthGuard>
       )}
 
@@ -73,7 +80,7 @@ export default function App() {
             goCondition={() => setPage("condition")}
             goLogin={handleUnauthorized}
             bottom={bottom}
-            right={right} // いらなければ消してOK
+            right={right}
           />
         </AuthGuard>
       )}
