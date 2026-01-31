@@ -47,10 +47,10 @@ export default function LoginPage({ onSuccess, right, bottom }) {
   };
 
   return (
-    <Page title="ログイン" right={right} bottom={bottom}>
+    <Page title="ログイン" bottom={bottom}>
       <Card
         title="アカウントでログイン"
-        subtitle="メールとパスワードでログインします。成功すると token が localStorage に保存されます。"
+        subtitle="メールとパスワードでログインします。"
       >
         <div style={{ maxWidth: 420, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>

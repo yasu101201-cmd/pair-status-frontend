@@ -20,9 +20,13 @@ export function Spacer({ h = 12 }) {
   return <div style={{ height: h }} />;
 }
 
-export function Page({ title, right, bottom, children }) {
-  const bottomH = bottom ? 74 : 0; // ✅ 高さ（好みでOK）
-
+export function Page({
+  title,
+  right,
+  bottom,
+  children,
+  showAppHeader = true, // ← ★追加（デフォルト表示）
+}) {
   return (
     <div
       style={{
@@ -31,69 +35,76 @@ export function Page({ title, right, bottom, children }) {
         fontFamily: baseFont,
         color: theme.text,
         padding: "28px 18px",
-        paddingBottom: "110px", // 👈 bottom tab 分
+        paddingBottom: bottom ? "110px" : "28px",
       }}
     >
       <div style={{ maxWidth: theme.pageMax, margin: "0 auto" }}>
-        {/* App Header */}
-        <div
-          style={{
-            background: "rgba(255,255,255,0.55)",
-            border: "1px solid rgba(15, 23, 42, 0.06)",
-            borderRadius: 20,
-            padding: "18px 18px",
-            boxShadow: "0 10px 30px rgba(2,6,23,0.06)",
-            backdropFilter: "blur(8px)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-              gap: 12,
-            }}
-          >
-            <div>
-              <h1 style={{ margin: 0, fontSize: 28, letterSpacing: -0.5 }}>
-                Pair Condition App
-              </h1>
-              <div style={{ marginTop: 6, color: theme.muted, fontSize: 13 }}>
-                ペアを作って、相手の状態をサクッと共有。
+        {/* ===== App Header（ここが邪魔だった部分）===== */}
+        {showAppHeader && (
+          <>
+            <div
+              style={{
+                background: "rgba(255,255,255,0.55)",
+                border: "1px solid rgba(15, 23, 42, 0.06)",
+                borderRadius: 20,
+                padding: "18px 18px",
+                boxShadow: "0 10px 30px rgba(2,6,23,0.06)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 12,
+                }}
+              >
+                <div>
+                  <h1 style={{ margin: 0, fontSize: 28 }}>
+                    Pair Condition App
+                  </h1>
+                  <div
+                    style={{
+                      marginTop: 6,
+                      color: theme.muted,
+                      fontSize: 13,
+                    }}
+                  >
+                    ペアを作って、相手の状態をサクッと共有。
+                  </div>
+                </div>
+
+                {right ? <div>{right}</div> : null}
               </div>
             </div>
 
-            {/* right は残す（PC/開発用に便利） */}
-            {right ? <div>{right}</div> : null}
+            {/* ヘッダー下の余白 */}
+            <div style={{ height: 26 }} />
+          </>
+        )}
+
+        {/* ===== ページタイトル ===== */}
+        {title && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              marginBottom: 16,
+            }}
+          >
+            <h2 style={{ margin: 0, fontSize: 22 }}>{title}</h2>
           </div>
-        </div>
+        )}
 
-        {/* spacer : ヘッダーと本文の距離 */}
-        <div style={{ height: 26 }} />
-
-        {/* Page title row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-            marginBottom: 16,
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: 22 }}>{title}</h2>
-        </div>
-
-        {/* Content */}
+        {/* ===== コンテンツ ===== */}
         <div>{children}</div>
-
-        {/* bottom spacer（上のpaddingBottomで確保するので薄くてOK） */}
-        <div style={{ height: 12 }} />
       </div>
 
-      {/* ✅ 下固定ナビ */}
-      {/* Page({ title, right, children, bottom }) */}
-      {bottom ? (
+      {/* ===== 下固定ナビ ===== */}
+      {bottom && (
         <div
           style={{
             position: "fixed",
@@ -112,11 +123,10 @@ export function Page({ title, right, bottom, children }) {
             {bottom}
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }
-
 export function Card({ title, subtitle, right, children }) {
   return (
     <div

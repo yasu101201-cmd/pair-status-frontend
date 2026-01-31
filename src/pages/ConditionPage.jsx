@@ -296,7 +296,7 @@ export default function ConditionPage({
   const cardWrap = { maxWidth: 720, margin: "0 auto" };
 
   return (
-    <Page title="コンディション" right={right} bottom={bottom}>
+    <Page title="コンディション" bottom={bottom} showAppHeader={false}>
       <div style={cardWrap}>
         {toast && (
           <Toast tone={toast.tone} onClose={() => setToast(null)}>

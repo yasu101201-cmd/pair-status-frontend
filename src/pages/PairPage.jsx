@@ -351,7 +351,7 @@ export default function PairPage({
     error || (state === "PAIRED" ? stateMessage : info || stateMessage);
 
   return (
-    <Page title="ペア" right={right} bottom={bottom}>
+    <Page title="ペア" bottom={bottom}>
       <div style={{ maxWidth: 920, margin: "0 auto" }}>
         {/* メッセージ */}
         {bannerText && (

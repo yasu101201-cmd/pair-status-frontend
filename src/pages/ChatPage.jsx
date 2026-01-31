@@ -1,5 +1,5 @@
 // src/pages/ChatPage.jsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Page, Card, Pill, Button, Row } from "../ui/ui";
 import { apiFetchJson } from "../api/api";
 
@@ -17,10 +17,8 @@ const SUB_META = {
   PAINFUL: { label: "辛い", emoji: "😣" },
   HAPPY: { label: "嬉しい", emoji: "🎉" },
   HUNGRY: { label: "お腹すいた", emoji: "🍽️" },
-
   TIRED: { label: "疲れた", emoji: "😮‍💨" },
   SLEEPY: { label: "眠い", emoji: "😴" },
-
   COLD: { label: "風邪気味", emoji: "🤧" },
   FEVER: { label: "熱", emoji: "🌡️" },
   HEADACHE: { label: "頭痛", emoji: "🤕" },
@@ -72,7 +70,7 @@ function getMyUserIdFromToken() {
     const json = JSON.parse(
       atob(payload.replace(/-/g, "+").replace(/_/g, "/")),
     );
-    return json.sub || null; // UUID文字列
+    return json.sub || null;
   } catch {
     return null;
   }
@@ -104,7 +102,6 @@ function Bubble({ isMe, mainEmoji, mainLabel, subEmoji, subLabel, note, at }) {
           padding: "10px 12px",
         }}
       >
-        {/* ✅ ラベル方式（どっちが誰か明確） */}
         <div
           style={{
             fontSize: 11,
@@ -161,11 +158,16 @@ function Bubble({ isMe, mainEmoji, mainLabel, subEmoji, subLabel, note, at }) {
 export default function ChatPage({ right, bottom, goLogin }) {
   const [talk, setTalk] = useState([]);
   const [busy, setBusy] = useState(false);
-  const [apiMissing, setApiMissing] = useState(false); // 404の時
+  const [apiMissing, setApiMissing] = useState(false);
   const [errorText, setErrorText] = useState("");
 
-  const myId = useMemo(() => getMyUserIdFromToken(), []);
+  // ✅ 追加：ペア成立してない時の表示制御（落ちないようにデフォはfalse）
+  const [notPaired, setNotPaired] = useState(false);
 
+  const listRef = useRef(null);
+  const bottomRef = useRef(null);
+
+  const myId = useMemo(() => getMyUserIdFromToken(), []);
   const onUnauthorized = () => goLogin?.();
 
   const fetchTalk = async () => {
@@ -175,27 +177,36 @@ export default function ChatPage({ right, bottom, goLogin }) {
     setErrorText("");
 
     try {
+      // ✅ まずペア状態チェック（あなたのAPIに合わせて）
+      // ここが違うなら /pairs/status のレスポンスだけ教えて。すぐ合わせる。
+      const status = await apiFetchJson(
+        "/pairs/status",
+        {},
+        { onUnauthorized, allowStatuses: [404] },
+      );
+      if (!status || status.state !== "PAIRED") {
+        setNotPaired(true);
+        setTalk([]);
+        return;
+      }
+      setNotPaired(false);
+
       const data = await apiFetchJson(
         "/conditions/talk",
         {},
         { onUnauthorized, allowStatuses: [404] },
       );
 
-      // apiFetchJsonが404でnull返す設計の場合に備える
       if (!data) {
         setApiMissing(true);
-        setTalk(MOCK); // ✅ API未実装でも画面が見れる
+        setTalk(MOCK);
         return;
       }
 
-      if (Array.isArray(data)) {
-        setTalk(data);
-      } else {
-        setTalk([]);
-      }
+      setTalk(Array.isArray(data) ? data : []);
     } catch (e) {
       setErrorText(String(e?.message || e));
-      setTalk(MOCK); // ✅ 失敗しても見た目は確認できる
+      setTalk(MOCK);
     } finally {
       setBusy(false);
     }
@@ -206,9 +217,11 @@ export default function ChatPage({ right, bottom, goLogin }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ APIが新しい順で返す想定 → 表示は古い→新しい
+  // ✅ 表示は「古い → 新しい」(最新が一番下)
   const view = useMemo(() => {
     const arr = Array.isArray(talk) ? [...talk] : [];
+
+    // APIが「新しい順」で返す想定 → 画面は古→新にしたいのでreverse
     arr.reverse();
 
     return arr.map((m) => {
@@ -219,8 +232,6 @@ export default function ChatPage({ right, bottom, goLogin }) {
       const sub = m.subCondition
         ? SUB_META[m.subCondition] || { label: m.subCondition, emoji: "—" }
         : null;
-
-      // ✅ MOCK対応：userIdが "me"/"partner" の時も判定できるように
       const isMe = m.userId === "me" || (!!myId && m.userId === myId);
 
       return {
@@ -236,8 +247,14 @@ export default function ChatPage({ right, bottom, goLogin }) {
     });
   }, [talk, myId]);
 
+  // ✅ 画面に入った時/更新時に「最新（＝一番下）」へ
+  useEffect(() => {
+    if (!bottomRef.current) return;
+    bottomRef.current.scrollIntoView({ behavior: "auto" });
+  }, [view.length, busy]);
+
   return (
-    <Page title="トーク" right={right} bottom={bottom}>
+    <Page title="日々の記憶" bottom={bottom} showAppHeader={false}>
       <div style={{ maxWidth: 720, margin: "0 auto" }}>
         <Card
           title="履歴"
@@ -250,29 +267,44 @@ export default function ChatPage({ right, bottom, goLogin }) {
             </Row>
           }
         >
-          {apiMissing ? (
-            <div style={{ opacity: 0.75, fontSize: 14, marginBottom: 10 }}>
-              ※ いま /conditions/talk が未実装(404)なので、仮データを表示中
-            </div>
-          ) : null}
-
           {errorText ? (
-            <div style={{ opacity: 0.75, fontSize: 12, marginBottom: 10 }}>
-              取得エラー: {errorText}
+            <div style={{ marginBottom: 10, color: "#b91c1c", fontSize: 13 }}>
+              {errorText}
             </div>
           ) : null}
 
-          {view.length === 0 ? (
+          {notPaired ? (
+            <div style={{ opacity: 0.75, fontSize: 14 }}>
+              まだペアが成立していないので履歴は見れません（ペア画面で作成/参加してね）
+            </div>
+          ) : view.length === 0 ? (
             <div style={{ opacity: 0.75, fontSize: 14 }}>
               まだ履歴がありません（コンディションを送るとここに溜まります）
             </div>
           ) : (
-            <div style={{ display: "grid", gap: 10 }}>
+            <div
+              ref={listRef}
+              style={{
+                height: "70vh", // ✅ 画面内に収める
+                overflowY: "auto", // ✅ 中だけスクロール
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                paddingRight: 6, // スクロールバーで潰れないように
+              }}
+            >
               {view.map((m) => (
                 <Bubble key={m.id} {...m} />
               ))}
+              <div ref={bottomRef} />
             </div>
           )}
+
+          {apiMissing ? (
+            <div style={{ marginTop: 10, opacity: 0.6, fontSize: 12 }}>
+              ※ /conditions/talk が未実装(404)だったので仮データで表示中
+            </div>
+          ) : null}
         </Card>
       </div>
     </Page>
