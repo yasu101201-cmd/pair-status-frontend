@@ -285,7 +285,8 @@ export default function ChatPage({ right, bottom, goLogin }) {
             <div
               ref={listRef}
               style={{
-                height: "70vh", // ✅ 画面内に収める
+                // height: "70vh", // ✅ 画面内に収める
+                maxHeight: "calc(100dvh - 100px)",
                 overflowY: "auto", // ✅ 中だけスクロール
                 display: "flex",
                 flexDirection: "column",
